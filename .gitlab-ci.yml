@@ -1,0 +1,19 @@
+stages:
+  - build
+
+build_rust_project:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    CARGO_TERM_COLOR: always
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - docker build -t rp-prod .
+    - docker run --rm -t rp-prod cargo clippy --release -- -D warnings
+    - docker run --rm -t rp-prod cargo build --release
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
