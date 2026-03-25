@@ -1,6 +1,5 @@
 stages:
   - build
-
 build_rust_project:
   stage: build
   image: docker:latest
